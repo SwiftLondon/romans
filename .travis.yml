@@ -1,5 +1,5 @@
 language: objective-c  
 osx_image: xcode7.2
-#xcode_project: MovingHelper.xcodeproj #3
+xcode_project: roman-numbers.playground
 #xcode_scheme: MovingHelper #4
 #xcode_sdk: iphonesimulator8.4 #5
