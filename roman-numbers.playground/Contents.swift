@@ -19,3 +19,6 @@ assert(numToRoman(three) == III, "the number 3 is III")
 // associative?? commutative??
 assert(romanToNum(numToRoman(three)) == three, "3 -> III -> 3")
 assert(numToRoman(romanToNum(III)) == III, "III -> 3 -> III")
+
+let IV = "IV"
+assert(romanToNum(IV) == 4, "IV is four")
