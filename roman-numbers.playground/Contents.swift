@@ -105,6 +105,8 @@ assert(romanToNum("III") == 3, "III is 3")
 assert(romanToNum("IV") == 4, "IV is 4")
 assert(romanToNum("V") == 5, "V is 5")
 assert(romanToNum("VI") == 6, "VI is 6")
+assert(romanToNum("IX") == 9, "IX is 9")
 assert(romanToNum("VIII") == 8, "VIII is 8")
+assert(romanToNum("MCMLXXXI") == 1981, "MCMLXXXI is 1981")
 assert(romanToNum("MMXVI") == 2016, "MMXVI is 2016")
 
