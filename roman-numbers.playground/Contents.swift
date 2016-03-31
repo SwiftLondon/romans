@@ -83,36 +83,45 @@ enum RomanNumeralSymbol: Int {
  4. reduce with token.rawValue and op
 */
 func romanToNum(romanNumber: String) -> Int {
+    struct SymbolPair {
+        let current: RomanNumeralSymbol
+        let next: RomanNumeralSymbol
+    }
+    
+    struct Command {
+        let symbol: RomanNumeralSymbol
+        let op: (Int, Int) -> Int
+    }
+
     func parseTokens(romanNumber: String) -> [RomanNumeralSymbol] {
         return romanNumber.characters.map({(character: Character) in RomanNumeralSymbol.parse(character)!})
     }
-    
-    func evalTokens(tokens: [RomanNumeralSymbol]) -> Int {
-        struct SymbolPair {
-            let current: RomanNumeralSymbol
-            let next: RomanNumeralSymbol
-        }
-        
-        struct Command {
-            let symbol: RomanNumeralSymbol
-            let op: (Int, Int) -> Int
-        }
-        
-        func getOp(first: RomanNumeralSymbol, second: RomanNumeralSymbol) -> ((Int, Int) -> Int) {
-            return first.rawValue < second.rawValue ? (-) : (+)
-        }
-        
-        return tokens
-            .reverse()
-            .reduce([SymbolPair](), combine: {(accumulator, symbol) in accumulator + [SymbolPair(current: symbol, next: accumulator.last?.current ?? symbol)]})
-            .map({(symbolPair: SymbolPair) -> Command in Command(symbol: symbolPair.current, op: getOp(symbolPair.current, second: symbolPair.next))})
-            .reduce(0, combine: {(accumulator: Int, command: Command) -> Int in command.op(accumulator, command.symbol.rawValue)})
-    }
 
-    return evalTokens(parseTokens(romanNumber))
+    func convertToSymbolPairs(tokens: [RomanNumeralSymbol]) -> [SymbolPair] {
+        return tokens.reverse()
+            .reduce([SymbolPair](), combine: {(accumulator, symbol) in accumulator + [SymbolPair(current: symbol, next: accumulator.last?.current ?? symbol)]})
+    }
+    
+    func convertToCommands(pairs: [SymbolPair]) -> [Command] {
+        return pairs.map({(symbolPair: SymbolPair) -> Command in
+            Command(symbol: symbolPair.current, op: symbolPair.current.rawValue < symbolPair.next.rawValue ? (-) : (+))})
+    }
+    
+    func evaluateCommands(commands: [Command]) -> Int {
+        return commands.reduce(0, combine: {(accumulator: Int, command: Command) -> Int in command.op(accumulator, command.symbol.rawValue)})
+    }
+    
+
+    return evaluateCommands(convertToCommands(convertToSymbolPairs(parseTokens(romanNumber))))
 }
 
 func numToRoman(number: Int) -> String {
+    // todo! move rule table
+    let lowSymbolPrefix = [0:0, 1:1, 2:2, 3:3, 4:1, 5:0, 6:0, 7:0, 8:0, 9:0]
+    let pivotSymbol = [0:0, 1:0, 2:0, 3:0, 4:1, 5:1, 6:1, 7:1, 8:1, 9:0]
+    let lowSymbolPostfix = [0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:1, 7:2, 8:3, 9:1]
+    let highSymbol = [0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:1]
+
     func thousandsOf(number: Int) -> String {
         return String.fromRepeatsOf(count: number / 1000, repeatedValue: RomanNumeralSymbol.M.string)
     }
@@ -120,14 +129,10 @@ func numToRoman(number: Int) -> String {
     // pivot: middle symbol in the range of hundreds / tens / ones, i.e: D, L, V
     func lowerRanks(number: Int, pivot: RomanNumeralSymbol) -> String {
         let modulo = (number / pivot.prev!.rawValue) % 10
-        let prefixCount = [0:0, 1:1, 2:2, 3:3, 4:1, 5:0, 6:0, 7:0, 8:0, 9:0][modulo]!
-        let pivotCount = [0:0, 1:0, 2:0, 3:0, 4:1, 5:1, 6:1, 7:1, 8:1, 9:0][modulo]!
-        let postfixCount = [0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:1, 7:2, 8:3, 9:1][modulo]!
-        let highValueCount = [0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:1][modulo]!
-        return pivot.prev!.string * prefixCount
-            + pivot.string * pivotCount
-            + pivot.prev!.string * postfixCount
-            + pivot.next!.string * highValueCount
+        return pivot.prev!.string * lowSymbolPrefix[modulo]!
+            + pivot.string * pivotSymbol[modulo]!
+            + pivot.prev!.string * lowSymbolPostfix[modulo]!
+            + pivot.next!.string * highSymbol[modulo]!
     }
 
     return thousandsOf(number) + RomanNumeralSymbol.pivots.map({lowerRanks(number, pivot: $0)}).reduce("", combine: {$1 + $0})
@@ -152,6 +157,7 @@ assert(romanToNum("V") == 5, "V is 5")
 assert(romanToNum("VI") == 6, "VI is 6")
 assert(romanToNum("VIII") == 8, "VIII is 8")
 assert(romanToNum("IX") == 9, "IX is 9")
+assert(romanToNum("X") == 10, "X is 10")
 assert(romanToNum("XVII") == 17, "XVII is 17")
 assert(romanToNum("XXXIX") == 39, "XXXIX is 39")
 assert(romanToNum("LXXXIX") == 89, "LXXXIX is 89")
@@ -165,6 +171,7 @@ assert(numToRoman(5) == "V", "V is 5")
 assert(numToRoman(6) == "VI", "VI is 6")
 assert(numToRoman(8) == "VIII", "VIII is 8")
 assert(numToRoman(9) == "IX", "IX is 9")
+assert(numToRoman(10) == "X", "X is 10")
 assert(numToRoman(17) == "XVII", "XVII is 17")
 assert(numToRoman(39) == "XXXIX", "XXXIX is 39")
 assert(numToRoman(89) == "LXXXIX", "LXXXIX is 89")
