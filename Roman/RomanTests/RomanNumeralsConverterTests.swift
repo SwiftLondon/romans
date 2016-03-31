@@ -108,4 +108,12 @@ class RomanNumeralsConverterTests: XCTestCase {
             }
         }
     }
+    
+    // Mixed
+    
+    func testTransitive() {
+        for i: UInt in 1...4999 {
+            XCTAssertEqual(try romanNumeralsToArabic(arabicToRomanNumerals(i)), i)
+        }
+    }
 }

@@ -11,10 +11,11 @@ import Foundation
 while (true) {
     do {
         let input = getKeyboardInput()
+        
         print(try romanNumeralsToArabic(input))
 //        print(try arabicToRomanNumerals(UInt(input) ?? 0))
-    } catch {
-        print("Invalid input")
+    } catch Error.InvalidInput(let message) {
+        print("Invalid input: \(message)")
     }
 }
 

@@ -41,12 +41,12 @@ let latinToRomainPairs: [NumeralPair] =
      (1, "I")]
 
 enum Error: ErrorType {
-    case InvalidInput
+    case InvalidInput(reason: String)
 }
 
 func arabicToRomanNumerals(number: UInt) throws -> String {
     guard number > 0 else {
-        throw Error.InvalidInput
+        throw Error.InvalidInput(reason: "Number cannot be 0")
     }
     
     var remainingNumber = number
@@ -63,7 +63,7 @@ func arabicToRomanNumerals(number: UInt) throws -> String {
     }
     
     if remainingNumber > 0 {
-        throw Error.InvalidInput
+        throw Error.InvalidInput(reason: "Invalid number")
     }
     
     return numerals
@@ -71,7 +71,7 @@ func arabicToRomanNumerals(number: UInt) throws -> String {
 
 func romanNumeralsToArabic(numerals: String) throws -> UInt {
     guard numerals.characters.count > 0 else {
-        throw Error.InvalidInput
+        throw Error.InvalidInput(reason: "Must not pass empty string")
     }
     
     var value = UInt(0)
@@ -88,7 +88,12 @@ func romanNumeralsToArabic(numerals: String) throws -> UInt {
     }
     
     if !scanner.atEnd {
-        throw Error.InvalidInput
+        throw Error.InvalidInput(reason: "Invalid numerals")
+    }
+    
+    let correctNumerals = try arabicToRomanNumerals(value)
+    if correctNumerals.caseInsensitiveCompare(numerals) != .OrderedSame {
+        throw Error.InvalidInput(reason: "Numerals for \(value) should be \(correctNumerals)")
     }
     
     return value
