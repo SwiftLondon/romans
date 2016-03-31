@@ -31,6 +31,15 @@ extension String {
     }
 }
 
+func * (left: String, right: Int) -> String {
+    if (right < 0) {
+        return ""
+    } else {
+        return String.fromRepeatsOf(count: right, repeatedValue: left)
+    }
+}
+
+
 enum RomanNumeralSymbol: Int {
     case I = 1
     case V = 5
@@ -66,44 +75,41 @@ enum RomanNumeralSymbol: Int {
     }
 }
 
-// NB! No validation on roman numeral string
+/*
+ "LXIV" -> [.L, .X, .I, .V] -> [(.L, .X), (.X, .I), (.I, .V), (.V, .V)] -> [(.L, +), (.X, +), (.I, -), (.V, +)] -> 0 + 50 + 10 - 1 + 5 -> 64
+ 1. parse
+ 2. tuples (tokens[i], tokens[i+1})
+ 3. tuples (token, op = tokens[i] < tokens[i+1] ? (-) : (+) )
+ 4. reduce with token.rawValue and op
+*/
 func romanToNum(romanNumber: String) -> Int {
-    struct Token {
-        var symbol: RomanNumeralSymbol
-        var count: Int
-    }
-
-    func parseTokens(romanNumber: String) -> [Token] {
-        var tokens = [Token]()
-        romanNumber.characters.forEach({(char: Character) in
-            if let nextSymbol = RomanNumeralSymbol.parse(char) {
-                if tokens.count < 1 || tokens.last!.symbol != nextSymbol {
-                    tokens.append(Token(symbol: nextSymbol, count: 1))
-                } else {
-                    let oldToken = tokens.popLast()!
-                    tokens.append(Token(symbol: nextSymbol, count: oldToken.count + 1));
-                }
-            }
-        })
-        return tokens
+    func parseTokens(romanNumber: String) -> [RomanNumeralSymbol] {
+        return romanNumber.characters.map({(character: Character) in RomanNumeralSymbol.parse(character)!})
     }
     
-    func evaluateTokens(tokens: [Token]) -> Int {
-        var accumulator = 0
-        let tokenCount = tokens.count
-        for i in 0..<tokenCount {
-            let currentToken = tokens[i]
-            let currentTokenValue = currentToken.symbol.rawValue * currentToken.count
-            if i < tokenCount-1 && currentToken.symbol.rawValue < tokens[i+1].symbol.rawValue {
-                accumulator -= currentTokenValue
-            } else {
-                accumulator += currentTokenValue
-            }
+    func evalTokens(tokens: [RomanNumeralSymbol]) -> Int {
+        struct SymbolPair {
+            let current: RomanNumeralSymbol
+            let next: RomanNumeralSymbol
         }
-        return accumulator
+        
+        struct Command {
+            let symbol: RomanNumeralSymbol
+            let op: (Int, Int) -> Int
+        }
+        
+        func getOp(first: RomanNumeralSymbol, second: RomanNumeralSymbol) -> ((Int, Int) -> Int) {
+            return first.rawValue < second.rawValue ? (-) : (+)
+        }
+        
+        return tokens
+            .reverse()
+            .reduce([SymbolPair](), combine: {(accumulator, symbol) in accumulator + [SymbolPair(current: symbol, next: accumulator.last?.current ?? symbol)]})
+            .map({(symbolPair: SymbolPair) -> Command in Command(symbol: symbolPair.current, op: getOp(symbolPair.current, second: symbolPair.next))})
+            .reduce(0, combine: {(accumulator: Int, command: Command) -> Int in command.op(accumulator, command.symbol.rawValue)})
     }
 
-    return evaluateTokens(parseTokens(romanNumber))
+    return evalTokens(parseTokens(romanNumber))
 }
 
 func numToRoman(number: Int) -> String {
@@ -112,20 +118,19 @@ func numToRoman(number: Int) -> String {
     }
     
     // pivot: middle symbol in the range of hundreds / tens / ones, i.e: D, L, V
-    func lowerRanksOf(number: Int, pivot: RomanNumeralSymbol) -> String {
+    func lowerRanks(number: Int, pivot: RomanNumeralSymbol) -> String {
         let modulo = (number / pivot.prev!.rawValue) % 10
-        switch modulo {
-        case 0: return ""
-        case 1...3: return String.fromRepeatsOf(count: modulo, repeatedValue: pivot.prev!.string)
-        case 4...8: return String.fromRepeatsOf(count: max(5 - modulo, 0), repeatedValue: pivot.prev!.string)
-            + pivot.string
-            + String.fromRepeatsOf(count: max(modulo - 5, 0), repeatedValue: pivot.prev!.string)
-        case 9: return pivot.prev!.string + pivot.next!.string
-        default: return "?"
-        }
+        let prefixCount = [0:0, 1:1, 2:2, 3:3, 4:1, 5:0, 6:0, 7:0, 8:0, 9:0][modulo]!
+        let pivotCount = [0:0, 1:0, 2:0, 3:0, 4:1, 5:1, 6:1, 7:1, 8:1, 9:0][modulo]!
+        let postfixCount = [0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:1, 7:2, 8:3, 9:1][modulo]!
+        let highValueCount = [0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:1][modulo]!
+        return pivot.prev!.string * prefixCount
+            + pivot.string * pivotCount
+            + pivot.prev!.string * postfixCount
+            + pivot.next!.string * highValueCount
     }
 
-    return thousandsOf(number) + RomanNumeralSymbol.pivots.map({lowerRanksOf(number, pivot: $0)}).reduce("", combine: {$1 + $0})
+    return thousandsOf(number) + RomanNumeralSymbol.pivots.map({lowerRanks(number, pivot: $0)}).reduce("", combine: {$1 + $0})
 }
 
 let III = "III"
@@ -165,4 +170,3 @@ assert(numToRoman(39) == "XXXIX", "XXXIX is 39")
 assert(numToRoman(89) == "LXXXIX", "LXXXIX is 89")
 assert(numToRoman(1981) == "MCMLXXXI", "MCMLXXXI is 1981")
 assert(numToRoman(2016) == "MMXVI", "MMXVI is 2016")
-
