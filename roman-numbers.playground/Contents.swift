@@ -1,6 +1,8 @@
 //: Convert to and from Roman numerals
+//: - [GitHub](https://github.com/HcomCoolCode/romans)
+//: - [Stash](http://stash.hcom/users/mmatyjas/repos/romans/browse)
 
-import UIKit
+import Foundation
 
 func romanToNum(romanNumber: String) -> Int {
     return romanNumber.characters.count
