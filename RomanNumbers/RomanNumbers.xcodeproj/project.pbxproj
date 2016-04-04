@@ -12,8 +12,8 @@
 		5B3E1FDA1CAD397200D8CFD6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B3E1FD81CAD397200D8CFD6 /* Main.storyboard */; };
 		5B3E1FDC1CAD397200D8CFD6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B3E1FDB1CAD397200D8CFD6 /* Assets.xcassets */; };
 		5B3E1FDF1CAD397200D8CFD6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B3E1FDD1CAD397200D8CFD6 /* LaunchScreen.storyboard */; };
-		5B3E1FEA1CAD397200D8CFD6 /* RomanNumbersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3E1FE91CAD397200D8CFD6 /* RomanNumbersTests.swift */; };
 		5B3E1FF61CAD39C600D8CFD6 /* RomanNumbersConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3E1FF51CAD39C600D8CFD6 /* RomanNumbersConverter.swift */; };
+		AAB705B31CB2461F00F45C33 /* RomanNumbersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB705B21CB2461F00F45C33 /* RomanNumbersTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,9 +35,9 @@
 		5B3E1FDE1CAD397200D8CFD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5B3E1FE01CAD397200D8CFD6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5B3E1FE51CAD397200D8CFD6 /* RomanNumbersTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RomanNumbersTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5B3E1FE91CAD397200D8CFD6 /* RomanNumbersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomanNumbersTests.swift; sourceTree = "<group>"; };
 		5B3E1FEB1CAD397200D8CFD6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5B3E1FF51CAD39C600D8CFD6 /* RomanNumbersConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RomanNumbersConverter.swift; sourceTree = "<group>"; };
+		AAB705B21CB2461F00F45C33 /* RomanNumbersTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RomanNumbersTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,7 +94,7 @@
 		5B3E1FE81CAD397200D8CFD6 /* RomanNumbersTests */ = {
 			isa = PBXGroup;
 			children = (
-				5B3E1FE91CAD397200D8CFD6 /* RomanNumbersTests.swift */,
+				AAB705B21CB2461F00F45C33 /* RomanNumbersTests.swift */,
 				5B3E1FEB1CAD397200D8CFD6 /* Info.plist */,
 			);
 			path = RomanNumbersTests;
@@ -219,7 +219,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5B3E1FEA1CAD397200D8CFD6 /* RomanNumbersTests.swift in Sources */,
+				AAB705B31CB2461F00F45C33 /* RomanNumbersTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +401,7 @@
 				5B3E1FF01CAD397200D8CFD6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5B3E1FF11CAD397200D8CFD6 /* Build configuration list for PBXNativeTarget "RomanNumbersTests" */ = {
 			isa = XCConfigurationList;
@@ -409,6 +410,7 @@
 				5B3E1FF31CAD397200D8CFD6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -130,16 +130,28 @@ class RomanNumbersTests: XCTestCase {
     
     // MARK: Conversion Errors
     
-    func testConvertRomanLiteral_CDY() {
+    func assertError(romanNum:String, conversionError:RomanLiteralConversionError) {
         do {
-            try converter.romanToNum("CDY")
+            try converter.romanToNum(romanNum)
             XCTFail("Expected error to be thrown")
         }
         catch let err as RomanLiteralConversionError {
-            XCTAssertEqual(err, RomanLiteralConversionError.UnknownLiteral)
+            XCTAssertEqual(err, conversionError)
         }
         catch {
             XCTFail("Unexpected error")
         }
+    }
+    
+    func testConvertRomanLiteral_UnknownLiteral_Y() {
+        assertError("CDY", conversionError: RomanLiteralConversionError.UnknownLiteral)
+    }
+    
+    func testConvertRomanLiteral_TooMany_X() {
+        assertError("XXXXX", conversionError: RomanLiteralConversionError.MaximumLiteralCountExceeded)
+    }
+    
+    func testConvertRomanLiteral_II_Before_XXX() {
+        assertError("IIXXX", conversionError: RomanLiteralConversionError.InvalidLiteralSequence)
     }
 }

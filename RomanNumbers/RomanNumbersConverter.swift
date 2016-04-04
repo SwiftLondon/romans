@@ -10,6 +10,8 @@ import UIKit
 
 enum RomanLiteralConversionError : ErrorType {
     case UnknownLiteral
+    case MaximumLiteralCountExceeded
+    case InvalidLiteralSequence
 }
 
 struct Converter {
