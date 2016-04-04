@@ -144,14 +144,14 @@ class RomanNumbersTests: XCTestCase {
     }
     
     func testConvertRomanLiteral_UnknownLiteral_Y() {
-        assertError("CDY", conversionError: RomanLiteralConversionError.UnknownLiteral)
+        assertError("CDY", conversionError: RomanLiteralConversionError.InvalidLiteral)
     }
     
     func testConvertRomanLiteral_TooMany_X() {
-        assertError("XXXXX", conversionError: RomanLiteralConversionError.MaximumLiteralCountExceeded)
+        assertError("XXXXX", conversionError: RomanLiteralConversionError.InvalidLiteral)
     }
     
     func testConvertRomanLiteral_II_Before_XXX() {
-        assertError("IIXXX", conversionError: RomanLiteralConversionError.InvalidLiteralSequence)
+        assertError("IIXXX", conversionError: RomanLiteralConversionError.InvalidLiteral)
     }
 }

@@ -5,63 +5,113 @@
 //  Created by Christian Scheid on 3/31/16.
 //  Copyright © 2016 Christian Scheid. All rights reserved.
 //
+//  With help from: http://www.rapidtables.com/convert/number/roman-numerals-converter.htm
+//
 
 import UIKit
 
 enum RomanLiteralConversionError : ErrorType {
-    case UnknownLiteral
-    case MaximumLiteralCountExceeded
-    case InvalidLiteralSequence
+    case InvalidLiteral
 }
 
-struct Converter {
+struct SymbolMatcher {
     
+    let symbol : String
+    let value : Int
+    let maxCount : Int
+    
+    func match(other:String) throws -> Bool {
+        if symbol == other {
+            if maxCount > 0 {
+                return true
+            }
+            else {
+                throw RomanLiteralConversionError.InvalidLiteral
+            }
+        }
+        else {
+            return false
+        }
+    }
+    
+    func consume() -> SymbolMatcher {
+        return SymbolMatcher(symbol: symbol, value: value, maxCount: maxCount - 1)
+    }
+    
+    func isExhausted() -> Bool {
+        return maxCount == 0
+    }
+}
+
+struct SymbolParser {
+    
+    let matchers : [SymbolMatcher]
+    let result : Int
+    
+    func parse(symbol:String) throws -> SymbolParser? {
+        
+        for (index, matcher) in matchers.enumerate() {
+
+            if try matcher.match(symbol) {
+                
+                let newMatcher = matcher.consume()
+                var remainingMatchers = [newMatcher] + matchers.suffixFrom(index + 1)
+                if newMatcher.isExhausted() {
+                    remainingMatchers = Array(remainingMatchers.dropFirst())
+                }
+                return SymbolParser(matchers: Array(remainingMatchers), result: result + matcher.value)
+            }
+        }
+        return nil
+    }
 }
 
 class RomanNumbersConverter: NSObject {
     
-    private let mappingTable = [
-        "I"     :    1,
-        "IV"    :    4,
-        "V"     :    5,
-        "IX"    :    9,
-        "X"     :   10,
-        "XL"    :   40,
-        "L"     :   50,
-        "XC"    :   90,
-        "C"     :  100,
-        "CD"    :  400,
-        "D"     :  500,
-        "CM"    :  900,
-        "M"     : 1000
-    ]
+    func generateSymbolMatchers() -> [SymbolMatcher] {
+        return [
+            SymbolMatcher(symbol: "I", value: 1, maxCount: 3),
+            SymbolMatcher(symbol: "IV", value: 4, maxCount: 1),
+            SymbolMatcher(symbol: "V", value: 5, maxCount: 1),
+            SymbolMatcher(symbol: "IX", value: 9, maxCount: 1),
+            SymbolMatcher(symbol: "X", value: 10, maxCount: 3),
+            SymbolMatcher(symbol: "XL", value: 40, maxCount: 1),
+            SymbolMatcher(symbol: "L", value: 50, maxCount: 1),
+            SymbolMatcher(symbol: "XC", value: 90, maxCount: 1),
+            SymbolMatcher(symbol: "C", value: 100, maxCount: 3),
+            SymbolMatcher(symbol: "CD", value: 400, maxCount: 1),
+            SymbolMatcher(symbol: "D", value: 500, maxCount: 1),
+            SymbolMatcher(symbol: "CM", value: 900, maxCount: 1),
+            SymbolMatcher(symbol: "M", value: 1000, maxCount: 4)
+        ]
+    }
     
-    func convertRomanString(romanCharacters:[Character], symbolLength:Int = 2, result:Int = 0) throws -> Int {
-        if romanCharacters.count == 0 {
-            return result
+    func convertRomanString(parser:SymbolParser, characters:[Character], symbolLength:Int = 2) throws -> Int {
+        if characters.count == 0 {
+            return parser.result
         }
         else {
-            let parsingLength = min(romanCharacters.count, symbolLength)
-            let symbolToParse = String(romanCharacters.suffix(parsingLength))
+            let parsingLength = min(characters.count, symbolLength)
+            let symbolToParse = String(characters.suffix(parsingLength))
             
-            if let convertedNumber = mappingTable[symbolToParse] {
-                let remainingCharacters = Array(romanCharacters.dropLast(parsingLength))
-                return try convertRomanString(remainingCharacters, symbolLength: 2, result: result + convertedNumber)
+            if let newParser = try parser.parse(symbolToParse) {
+                let remainingCharacters = Array(characters.dropLast(parsingLength))
+                return try convertRomanString(newParser, characters: remainingCharacters, symbolLength: 2)
             }
-            // In case a two-character symbol could not be found
-            // we shall try once more with one character only
             else if symbolLength == 2 {
-                return try convertRomanString(romanCharacters, symbolLength: 1, result: result)
+                return try convertRomanString(parser, characters: characters, symbolLength: 1)
             }
             else {
-                throw RomanLiteralConversionError.UnknownLiteral
+                throw RomanLiteralConversionError.InvalidLiteral
             }
         }
     }
     
     func romanToNum(romanNumber: String) throws -> Int {
         let romanCharacters = Array(romanNumber.characters)
-        return try convertRomanString(romanCharacters)
+        let matchers = generateSymbolMatchers()
+        let parser = SymbolParser(matchers: matchers, result: 0)
+        return try convertRomanString(parser, characters: romanCharacters)
     }
     
     func numToRoman(number: Int) -> String {
