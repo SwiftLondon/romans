@@ -43,11 +43,15 @@ struct SymbolMatcher {
     }
 }
 
+// 1. move convertRomanString interior to SymbolParser
+// 2. delete convertRomanString
+
 struct SymbolParser {
     
     let matchers : [SymbolMatcher]
     let result : Int
     
+    // Generates a new parser if a symbol was found
     func parse(symbol:String) throws -> SymbolParser? {
         
         for (index, matcher) in matchers.enumerate() {
@@ -55,9 +59,9 @@ struct SymbolParser {
             if try matcher.match(symbol) {
                 
                 let newMatcher = matcher.consume()
-                var remainingMatchers = [newMatcher] + matchers.suffixFrom(index + 1)
-                if newMatcher.isExhausted() {
-                    remainingMatchers = Array(remainingMatchers.dropFirst())
+                var remainingMatchers = matchers.suffixFrom(index + 1)
+                if !newMatcher.isExhausted() {
+                    remainingMatchers = [newMatcher] + remainingMatchers
                 }
                 return SymbolParser(matchers: Array(remainingMatchers), result: result + matcher.value)
             }

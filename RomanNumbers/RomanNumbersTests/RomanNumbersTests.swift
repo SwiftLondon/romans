@@ -148,7 +148,7 @@ class RomanNumbersTests: XCTestCase {
     }
     
     func testConvertRomanLiteral_TooMany_X() {
-        assertError("XXXXX", conversionError: RomanLiteralConversionError.InvalidLiteral)
+        assertError("XXXX", conversionError: RomanLiteralConversionError.InvalidLiteral)
     }
     
     func testConvertRomanLiteral_II_Before_XXX() {
