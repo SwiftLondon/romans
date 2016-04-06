@@ -43,9 +43,6 @@ struct SymbolMatcher {
     }
 }
 
-// 1. move convertRomanString interior to SymbolParser
-// 2. delete convertRomanString
-
 struct SymbolParser {
     
     let matchers : [SymbolMatcher]
@@ -91,6 +88,7 @@ class RomanNumbersConverter: NSObject {
     }
     
     func convertRomanString(parser:SymbolParser, characters:[Character], symbolLength:Int = 2) throws -> Int {
+        
         if characters.count == 0 {
             return parser.result
         }
@@ -99,8 +97,9 @@ class RomanNumbersConverter: NSObject {
             let symbolToParse = String(characters.suffix(parsingLength))
             
             if let newParser = try parser.parse(symbolToParse) {
-                let remainingCharacters = Array(characters.dropLast(parsingLength))
-                return try convertRomanString(newParser, characters: remainingCharacters, symbolLength: 2)
+                
+                let remainingCharacters = characters.dropLast(parsingLength)
+                return try convertRomanString(newParser, characters: Array(remainingCharacters), symbolLength: 2)
             }
             else if symbolLength == 2 {
                 return try convertRomanString(parser, characters: characters, symbolLength: 1)
