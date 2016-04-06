@@ -128,6 +128,16 @@ class RomanNumbersTests: XCTestCase {
         XCTAssertEqual(result, 499)
     }
     
+    func testConvertRomanLiteral_MCMXCVI() {
+        let result = try! converter.romanToNum("MCMXCVI")
+        XCTAssertEqual(result, 1996)
+    }
+    
+    func testConvertRomanLiteral_MMMMCMXCIX() {
+        let result = try! converter.romanToNum("MMMMCMXCIX")
+        XCTAssertEqual(result, 4999)
+    }
+    
     // MARK: Conversion Errors
     
     func assertError(romanNum:String, conversionError:RomanLiteralConversionError) {
