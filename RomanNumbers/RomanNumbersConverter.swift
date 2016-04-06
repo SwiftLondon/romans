@@ -29,8 +29,7 @@ struct Symbol {
     }
 }
 
-func generateSymbols() -> [Symbol] {
-    return [
+let romanSymbols = [
         Symbol(symbol: "I", decimalValue: 1, maxCount: 3),
         Symbol(symbol: "IV", decimalValue: 4, maxCount: 1),
         Symbol(symbol: "V", decimalValue: 5, maxCount: 1),
@@ -44,8 +43,7 @@ func generateSymbols() -> [Symbol] {
         Symbol(symbol: "D", decimalValue: 500, maxCount: 1),
         Symbol(symbol: "CM", decimalValue: 900, maxCount: 1),
         Symbol(symbol: "M", decimalValue: 1000, maxCount: 4)
-    ]
-}
+]
 
 struct SymbolParser {
     
@@ -92,7 +90,7 @@ class RomanNumbersConverter: NSObject {
     }
     
     func romanToNum(romanNumber: String) throws -> Int {
-        let parser = SymbolParser(symbols: generateSymbols(), result: 0)
+        let parser = SymbolParser(symbols: romanSymbols, result: 0)
         return try convertRomanString(parser, characters: Array(romanNumber.characters))
     }
     
