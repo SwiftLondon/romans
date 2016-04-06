@@ -14,10 +14,10 @@ enum RomanLiteralConversionError : ErrorType {
     case InvalidLiteral
 }
 
-struct SymbolMatcher {
+struct Symbol {
     
     let symbol : String
-    let value : Int
+    let decimalValue : Int
     let maxCount : Int
     
     func match(other:String) throws -> Bool {
@@ -34,8 +34,8 @@ struct SymbolMatcher {
         }
     }
     
-    func consume() -> SymbolMatcher {
-        return SymbolMatcher(symbol: symbol, value: value, maxCount: maxCount - 1)
+    func consume() -> Symbol {
+        return Symbol(symbol: symbol, decimalValue: decimalValue, maxCount: maxCount - 1)
     }
     
     func isExhausted() -> Bool {
@@ -45,22 +45,20 @@ struct SymbolMatcher {
 
 struct SymbolParser {
     
-    let matchers : [SymbolMatcher]
+    let symbols : [Symbol]
     let result : Int
     
     // Generates a new parser if a symbol was found
-    func parse(symbol:String) throws -> SymbolParser? {
+    func parse(romanLiteral:String) throws -> SymbolParser? {
         
-        for (index, matcher) in matchers.enumerate() {
+        for (index, symbol) in symbols.enumerate() {
 
-            if try matcher.match(symbol) {
+            if try symbol.match(romanLiteral) {
                 
-                let newMatcher = matcher.consume()
-                var remainingMatchers = matchers.suffixFrom(index + 1)
-                if !newMatcher.isExhausted() {
-                    remainingMatchers = [newMatcher] + remainingMatchers
-                }
-                return SymbolParser(matchers: Array(remainingMatchers), result: result + matcher.value)
+                let newSymbol = symbol.consume()
+                let newSymbols = [newSymbol] + symbols.suffixFrom(index + 1)
+                let remainingSymbols = newSymbols.filter( { !$0.isExhausted() } )
+                return SymbolParser(symbols: remainingSymbols, result: result + symbol.decimalValue)
             }
         }
         return nil
@@ -69,21 +67,21 @@ struct SymbolParser {
 
 class RomanNumbersConverter: NSObject {
     
-    func generateSymbolMatchers() -> [SymbolMatcher] {
+    func generateSymbols() -> [Symbol] {
         return [
-            SymbolMatcher(symbol: "I", value: 1, maxCount: 3),
-            SymbolMatcher(symbol: "IV", value: 4, maxCount: 1),
-            SymbolMatcher(symbol: "V", value: 5, maxCount: 1),
-            SymbolMatcher(symbol: "IX", value: 9, maxCount: 1),
-            SymbolMatcher(symbol: "X", value: 10, maxCount: 3),
-            SymbolMatcher(symbol: "XL", value: 40, maxCount: 1),
-            SymbolMatcher(symbol: "L", value: 50, maxCount: 1),
-            SymbolMatcher(symbol: "XC", value: 90, maxCount: 1),
-            SymbolMatcher(symbol: "C", value: 100, maxCount: 3),
-            SymbolMatcher(symbol: "CD", value: 400, maxCount: 1),
-            SymbolMatcher(symbol: "D", value: 500, maxCount: 1),
-            SymbolMatcher(symbol: "CM", value: 900, maxCount: 1),
-            SymbolMatcher(symbol: "M", value: 1000, maxCount: 4)
+            Symbol(symbol: "I", decimalValue: 1, maxCount: 3),
+            Symbol(symbol: "IV", decimalValue: 4, maxCount: 1),
+            Symbol(symbol: "V", decimalValue: 5, maxCount: 1),
+            Symbol(symbol: "IX", decimalValue: 9, maxCount: 1),
+            Symbol(symbol: "X", decimalValue: 10, maxCount: 3),
+            Symbol(symbol: "XL", decimalValue: 40, maxCount: 1),
+            Symbol(symbol: "L", decimalValue: 50, maxCount: 1),
+            Symbol(symbol: "XC", decimalValue: 90, maxCount: 1),
+            Symbol(symbol: "C", decimalValue: 100, maxCount: 3),
+            Symbol(symbol: "CD", decimalValue: 400, maxCount: 1),
+            Symbol(symbol: "D", decimalValue: 500, maxCount: 1),
+            Symbol(symbol: "CM", decimalValue: 900, maxCount: 1),
+            Symbol(symbol: "M", decimalValue: 1000, maxCount: 4)
         ]
     }
     
@@ -112,8 +110,8 @@ class RomanNumbersConverter: NSObject {
     
     func romanToNum(romanNumber: String) throws -> Int {
         let romanCharacters = Array(romanNumber.characters)
-        let matchers = generateSymbolMatchers()
-        let parser = SymbolParser(matchers: matchers, result: 0)
+        let symbols = generateSymbols()
+        let parser = SymbolParser(symbols: symbols, result: 0)
         return try convertRomanString(parser, characters: romanCharacters)
     }
     
