@@ -1,19 +1,19 @@
 /*: 
  # Romans is a programming excercise in a Swift Playground
  
- The problem is to convert between [roman numerals](https://en.wikipedia.org/wiki/Roman_numerals) & western arabic numbers.
+ The problem is converting between [roman numerals](https://en.wikipedia.org/wiki/Roman_numerals) & western arabic numbers.
  
  Your challenge is to implement two functions
  1. romanToNum which takes Roman numbers as Strings and returns their numeric value
- 2. numToRoman which takes a regular number and returns a roman one
+ 2. numToRoman which takes a regular number and returns a roman one as a String
 
- We have provided a few tests which pass by luck and a commented out test that doesnt pass
+ We have provided a few tests which pass by chance and one that doesnt
  
  - Note:
  Written in the year MMXVI,
  revised in the year MMXVII
  */
-import UIKit
+import Foundation
 
 // implement me!
 func romanToNum(romanNumber: String) -> Int {
