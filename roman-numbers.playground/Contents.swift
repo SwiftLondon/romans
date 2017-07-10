@@ -12,9 +12,7 @@
  - Note:
  Written in the year MMXVI,
  revised in the year MMXVII
- 
  */
-
 import UIKit
 
 // implement me!
@@ -27,7 +25,6 @@ func numToRoman(number: Int) -> String {
     let romanArray = [Character](repeating: "I", count: number)
     return String(romanArray)
 }
-
 
 let III = "III"
 let three = 3
