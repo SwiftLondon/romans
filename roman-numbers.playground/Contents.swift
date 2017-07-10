@@ -7,18 +7,18 @@ func romanToNum(romanNumber: String) -> Int {
 }
 
 func numToRoman(number: Int) -> String {
-    let romanArray = [Character](count: number, repeatedValue: "I")
+    let romanArray = [Character](repeating: "I", count: number)
     return String(romanArray)
 }
 
 
 let III = "III"
 let three = 3
-assert(romanToNum(III) == three, "the number III is 3")
-assert(numToRoman(three) == III, "the number 3 is III")
+assert(romanToNum(romanNumber: III) == three, "the number III is 3")
+assert(numToRoman(number: three) == III, "the number 3 is III")
 // associative?? commutative??
-assert(romanToNum(numToRoman(three)) == three, "3 -> III -> 3")
-assert(numToRoman(romanToNum(III)) == III, "III -> 3 -> III")
+assert(romanToNum(romanNumber: numToRoman(number: three)) == three, "3 -> III -> 3")
+assert(numToRoman(number: romanToNum(romanNumber: III)) == III, "III -> 3 -> III")
 
 let IV = "IV"
-assert(romanToNum(IV) == 4, "IV is four")
+assert(romanToNum(romanNumber: IV) == 4, "IV should be four")
